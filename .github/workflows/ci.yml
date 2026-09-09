@@ -1,0 +1,36 @@
+name: SQL QA
+
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+    branches: ["main"]
+  workflow_dispatch:
+
+jobs:
+  semantic-validation:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install validation dependency
+        run: pip install pandas
+
+      - name: Validate all SQL queries
+        run: python scripts/validate_queries.py
+
+      - name: Check canonical deliverables
+        shell: bash
+        run: |
+          test -f sql/00_base_datos_original.sql
+          test -f sql/01_consultas_resueltas.sql
+          test -f MUBIO06_Actividad1_Informe_preparado.docx
+          test -f docs/MATRIZ_RUBRICA.md
+          test -f docs/RESULTADOS_ESPERADOS.md
+          echo "OK: entregables canónicos presentes."
